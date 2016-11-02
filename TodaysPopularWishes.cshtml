@@ -1,0 +1,40 @@
+﻿@{
+    Page.Title = "Today's Popular Wishes";
+}
+
+@{
+    Wish w = new Wish("1", 1, "1", 1);
+    Wish[] wishes =
+                    {
+                        new Wish("5/10/16", 8739, "Solve World Hunger", 1, 87),
+                        new Wish("3/16/16", 3059, "New Presidential Candidates", 1, 17),
+                        new Wish("10/5/16", 9001, "Give Justin an A in the course", 1, 1)
+                    };
+}
+
+<hgroup class="title">
+    <h1>@Page.Title</h1>
+</hgroup>
+
+<section class="wishes">
+    <p>
+
+        <table>
+            <tr><th>Date</th><th>Description</th><th>Votes</th></tr>
+            @{
+                int i = 0;
+                while (i < wishes.Length)
+                {
+                    <tr>
+                        <td>@wishes[i].Date</td>
+                        <td>@wishes[i].Description</td>
+                        <td>@wishes[i].Votes</td>
+                        <td><input type="button" value="Vote"></td>
+                    </tr>
+
+                    i++;
+                }
+            }
+        </table>
+    </p>
+</section>

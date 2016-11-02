@@ -1,0 +1,28 @@
+﻿@{
+    Page.Title = "Wish Submitted";
+}
+
+<body>
+    @{ 
+        if(IsPost)
+        {
+            var category = Request["category"];
+            var description = Request["description"];
+            var notify = Request["notify"];
+
+            <p>
+                <h3>You successfully submitted a wish!</h3>
+                <h4>Here are the details:</h4>
+                Wish Category: <i>@category<br /></i>
+                Description: <i>@description<br /></i>
+                Notification Method: <i>@notify<br /><br /></i>
+
+                Thank you for using TiredGenie!
+            </p>
+        }
+        else
+        {
+            @: Error, no values submitted. Please try again.
+        }
+    }
+</body>
