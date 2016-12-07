@@ -1,0 +1,98 @@
+﻿@using prototype;
+@{
+    Page.Title = "Administration Panel";
+}
+@{
+    DatabaseAccess db = new DatabaseAccess();
+    var wishes = db.GetWishesByStatus("Clear");
+    if (IsPost)
+    {
+        AntiForgery.Validate();
+
+        if (Validation.IsValid())
+        {
+            var newStatus = Request["newStatus"];
+            var wishId = Request["wishId"];
+            var status = Request["status"];
+            var votes = Request["votes"];
+            if (wishId != null && newStatus != null)
+            {
+                db.UpdateWish(newStatus, int.Parse(votes), int.Parse(wishId));
+                wishes = db.GetWishesByStatus(status);
+            }
+            else if (status != null && wishId == null)
+            {
+                wishes = db.GetWishesByStatus(status);
+            }
+            else if (status == null && wishId != null)
+            {
+                db.DeleteWish(int.Parse(wishId));
+                wishes = db.GetWishesByStatus(status);
+            }
+        }
+    }
+
+}
+<hgroup class="title">
+    <h1>@Page.Title</h1>
+</hgroup>
+
+<section class="admin">
+    <p>
+        This page will contain the administration panel for the Genie.<br />
+        It will only be visible and accessible to the Genie, via their<br />
+        own user account.
+    </p>
+</section>
+
+<section class="status">
+    <p>View wishes by status</p>
+    <form action="~/Admin" method="post">
+        @AntiForgery.GetHtml()
+        <input type="submit" name="status" value="Pending" />
+        <input type="submit" name="status" value="Approved" />
+        <input type="submit" name="status" value="Denied" />
+        <input type="submit" name="status" value="Granted" />
+        <input type="submit" name="status" value="Clear" />
+    </form>
+</section>
+
+<section>
+    <table>
+        <tr><th>Date</th><th>ID</th><th>Username</th><th>Description</th><th>Status</th></tr>
+
+        @foreach (var wish in wishes)
+        {
+            <tr>
+                <td>@wish.Date</td>
+                <td>@wish.Id</td>
+                <td>@wish.Name</td>
+                <td>@wish.Description</td>
+                <td>@wish.Status</td>
+                <td>
+                    <form action="~/Admin" method="post">
+                        @AntiForgery.GetHtml()
+                        <select name="newStatus">
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Denied">Denied</option>
+                            <option value="Granted">Granted</option>
+                        </select>
+                        <input type="hidden" name="wishId" value="@wish.Id" />
+                        <input type="hidden" name="status" value="@wish.Status" />
+                        <input type="hidden" name="votes" value="@wish.Votes" />
+                        <input type="submit" value="Change Status">
+                    </form>
+                </td>
+                <td>
+                    <form action="~/Admin" method="post">
+                        @AntiForgery.GetHtml()
+                        <input type="hidden" name="wishId" value="@wish.Id" />
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+</section>
+

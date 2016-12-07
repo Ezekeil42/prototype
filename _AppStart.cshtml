@@ -1,11 +1,50 @@
-﻿@{
-// This starter site is the same as the one in VS 2015
-// except that the Membership system has been replaced by Identity.
-// It will work in SQL Server deployments that do not supply SQLCE.
-// It is not set up for external logins.
-// It is not set up for two-factor authentication.
-// It requires OWIN SMTP to be setup for password recovery.
-// See http://www.asp.net/identity for information on this.
+﻿@using prototype;
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.EntityFramework;
 
-// To learn how to optimize scripts and stylesheets in your site go to http://go.microsoft.com/fwlink/?LinkID=248973
+@{
+    // This starter site is the same as the one in VS 2015
+    // except that the Membership system has been replaced by Identity.
+    // It will work in SQL Server deployments that do not supply SQLCE.
+    // It is not set up for external logins.
+    // It is not set up for two-factor authentication.
+    // It requires OWIN SMTP to be setup for password recovery.
+    // See http://www.asp.net/identity for information on this.
+
+    // To learn how to optimize scripts and stylesheets in your site go to http://go.microsoft.com/fwlink/?LinkID=248973
+    App.SiteName = "TiredGenie";
+    App.Owner = "justinseevers@student.olympic.edu";
+
+    var userStore = new UserStore<IdentityUser>();
+    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(userStore.Context));
+    var userManager = new UserManager<IdentityUser>(userStore);
+
+    const string AdminRoleName = "admin";
+    const string AdminUserName = "admin";
+
+    if (!roleManager.RoleExists(AdminRoleName))
+    {
+        var adminRoleNew = new IdentityRole { Name = AdminRoleName };
+        roleManager.Create(adminRoleNew);
+    }
+
+    var adminRole = roleManager.FindByName(AdminRoleName);
+
+    if (adminRole.Users.Count == 0)
+    {
+        var adminUser = userManager.FindByName(AdminUserName);
+
+        if (adminUser != null)
+        {
+            userManager.AddToRole(role: AdminRoleName, userId: adminUser.Id);
+        }
+    }
+    roleManager.Dispose();
+    userManager.Dispose();
+    userStore.Dispose();
+
+    App.AdminRole = AdminRoleName;
+
+    DatabaseAccess da = new DatabaseAccess();
+    da.Seed();
 }

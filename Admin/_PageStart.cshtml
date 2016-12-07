@@ -1,0 +1,17 @@
+﻿@using Microsoft.AspNet.Identity
+
+@{
+    HttpContext.Current.Response.Headers.Remove("Server");
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.Redirect("~/Account/Login?returnUrl="
+            + Request.Url.LocalPath);
+    }
+    if (!User.IsInRole(App.AdminRole))
+    {
+        Response.Redirect("~/Account/Manage");
+    }
+
+    Layout = "~/_SiteLayout.cshtml";
+}

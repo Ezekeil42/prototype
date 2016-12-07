@@ -140,8 +140,16 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebMatrix.Data, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.3.2.3\lib\net45\WebMatrix.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Identity.mdf" />
+    <Content Include="App_Data\Identity_log.ldf">
+      <DependentUpon>Identity.mdf</DependentUpon>
+    </Content>
     <Content Include="bin\EntityFramework.dll" />
     <Content Include="bin\EntityFramework.SqlServer.dll" />
     <Content Include="bin\EntityFramework.SqlServer.xml" />
@@ -254,6 +262,7 @@
     <Content Include="Images\accent.png" />
     <Content Include="Images\bullet.png" />
     <Content Include="Images\heroAccent.png" />
+    <Content Include="Images\logo.png" />
     <Content Include="Images\orderedList0.png" />
     <Content Include="Images\orderedList1.png" />
     <Content Include="Images\orderedList2.png" />
@@ -306,8 +315,9 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Wish.cs" />
+    <Content Include="App_Code\DatabaseAccess.cs" />
     <Content Include="App_Code\Startup.cs" />
+    <Content Include="App_Code\Wish.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -320,10 +330,13 @@
     <Content Include="YourWishes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Admin.cshtml" />
+    <Content Include="Admin\Admin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NewWish.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\_PageStart.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

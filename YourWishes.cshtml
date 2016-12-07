@@ -1,16 +1,43 @@
-﻿@{
+﻿@using prototype;
+@{
     Page.Title = "Your Wishes";
 }
 
-@{ 
-    Wish w = new Wish("1", 1, "1", 1);
-    Wish[] wishes =
-                    {
-                        new Wish("10/1/16", 8739, "Wish 1", 0),
-                        new Wish("10/3/16", 3059, "Wish 2", 1), 
-                        new Wish("10/4/16", 9001, "Wish 3", 2)
-                    };
+@{
+    DatabaseAccess db = new DatabaseAccess();
+
+    if (IsPost)
+    {
+        AntiForgery.Validate();
+
+        if (Validation.IsValid())
+        {
+            var description = Request["description"];
+            var wishId = Request["wishId"];
+            if (description != null)
+            {
+                db.AddWish(new Wish(User.Identity.Name, DateTime.Now, "Pending", 0, description));
+
+                <p>
+                    <h3>You successfully submitted a wish!</h3>
+                    <h4>Here are the details:</h4>
+                    Description: <i>@description<br /></i>
+
+                    Thank you for using TiredGenie!
+                </p>
+            }
+            else if (wishId != null)
+            {
+                db.DeleteWish(int.Parse(wishId));
+                <p>Wish ID # @wishId successfully deleted!</p>
+            }
+        }
+    }
+
+    var wishes = db.GetWishesByUser(User.Identity.Name);
 }
+
+
 
 <hgroup class="title">
     <h1>@Page.Title</h1>
@@ -24,67 +51,48 @@
     </p>
 </section>
 
-<section class="manage">
-    <h3>Your Wishes</h3>
-    <p>
-        <table>
-            <tr><th>Date</th><th>ID</th><th>Content</th><th>Status</th></tr>
-            @{
-                int i = 0;
-                while (i < wishes.Length)
+@if (User.Identity.IsAuthenticated)
+{
+    <section class="manage">
+        <h3>Your Wishes</h3>
+            <table>
+                <tr><th>Date</th><th>ID</th><th>Content</th><th>Status</th></tr>
+
+                @foreach (var wish in wishes)
                 {
-                    string wishStatus;
-                    if(wishes[i].Status == 0)
-                    {
-                        wishStatus = "Pending Approval";
-                    }
-                    else if(wishes[i].Status == 1)
-                    {
-                        wishStatus = "Approved";
-                    }
-                    else
-                    {
-                        wishStatus = "Denied";
-                    }
                     <tr>
-                        <td>@wishes[i].Date</td>
-                        <td>@wishes[i].Id</td>
-                        <td>@wishes[i].Description</td>
-                        <td>@wishStatus</td>
-                        <td><input type="button" value="Delete"></td>
+                        <td>@wish.Date</td>
+                        <td>@wish.Id</td>
+                        <td>@wish.Description</td>
+                        <td>@wish.Status</td>
+                        <td>
+                            <form action="~/YourWishes" method="post">
+                                @AntiForgery.GetHtml()
+                                <input type="hidden" name="wishId" value="@wish.Id" />
+                                <input type="submit" value="Delete">
+                            </form>
+                        </td>
                     </tr>
-
-                    i++;
                 }
-            }
-        </table>
-    </p>
-</section>
+            </table>
+    </section>
 
-<section class="submit">
-    <h3>Submit a New Wish</h3>
-    <form action="~/NewWish" method="post">
-        <p>
-            <label for="category">Wish Category:</label><br />
-            <input type="radio" name="category" value="For me" checked/>For me<br />
-            <input type="radio" name="category" value="For others" />For others
-        </p>
-        <p>
-            <label for="description">Describe your wish:</label>
-            <input type="text" name="description" required/>
-        </p>
-        <p>
-            <label for="contact">Notify me of wish approval via:</label>
-            <select name="notify">
-                <option value="Phone">Phone</option>
-                <option value="Email">E-mail</option>
-                <option value="Twitter">Twitter</option>
-                <option value="None">Don't notify me</option>
-            </select>
-        </p>
-        <p>
-            <input type="submit" value="Submit" />
-        </p>
+    <section class="submit">
+        <h3>Submit a New Wish</h3>
+        <form action="~/YourWishes" method="post">
+            @AntiForgery.GetHtml()
+            <p>
+                <label for="description">Describe your wish:</label>
+                <input type="text" name="description" required/>
+            </p>
+            <p>
+                <input type="submit" value="Submit" />
+            </p>
 
-    </form>
-</section>
+        </form>
+    </section>
+}
+else
+{
+    <p>Please <a href="~/Account/Login">login or register</a> to access your wishes!</p>
+}
